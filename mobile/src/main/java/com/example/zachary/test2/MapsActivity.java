@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -83,6 +84,8 @@ public class MapsActivity extends FragmentActivity {
         }
 
         mMap.addPolyline(options);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(38.987595, -76.941287), 14.0f));
     }
 
     // Provide dummy data to start testing
