@@ -1,5 +1,6 @@
 package com.example.zachary.test2;
 
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -7,6 +8,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity {
 
@@ -60,16 +66,41 @@ public class MapsActivity extends FragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.987595, -76.941287)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.987658, -76.940542)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.984457, -76.940107)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.982812, -76.939213)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.982315, -76.939126)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.982284, -76.938809)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.981767, -76.938834)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.981772, -76.938961)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.980967, -76.938921)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.980949, -76.938759)).title("Marker"));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(38.980490, -76.938759)).title("Marker"));
+        List<LatLng> path = getDummyPath();
+
+        PolylineOptions options = new PolylineOptions();
+
+        options.color(Color.parseColor("#CC0000FF"));
+        options.width(5);
+        options.visible(true);
+
+        for(LatLng point : path) {
+            // Add the point to be drawn on the route
+            options.add(point);
+
+            // Add the point as a marker to know that the route has a direction step here
+            mMap.addMarker(new MarkerOptions().position(point).title("Marker"));
+        }
+
+        mMap.addPolyline(options);
+    }
+
+    // Provide dummy data to start testing
+    private List<LatLng> getDummyPath() {
+        ArrayList<LatLng> path = new ArrayList<>();
+
+        path.add(new LatLng(38.987595, -76.941287));
+        path.add(new LatLng(38.987658, -76.940542));
+        path.add(new LatLng(38.984457, -76.940107));
+        path.add(new LatLng(38.982812, -76.939213));
+        path.add(new LatLng(38.982315, -76.939126));
+        path.add(new LatLng(38.982284, -76.938809));
+        path.add(new LatLng(38.981767, -76.938834));
+        path.add(new LatLng(38.981772, -76.938961));
+        path.add(new LatLng(38.980967, -76.938921));
+        path.add(new LatLng(38.980949, -76.938759));
+        path.add(new LatLng(38.980490, -76.938759));
+
+        return path;
     }
 }
