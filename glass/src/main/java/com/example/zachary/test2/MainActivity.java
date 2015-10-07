@@ -24,21 +24,29 @@ public class MainActivity extends Activity {
             + "&zoom=%d"
             + "&sensor=true"
             + "&size=640x360"
-            + "&scale=1"
-            + "&style=element:geometry%%7Cinvert_lightness:true"
-            + "&style=feature:landscape.natural.terrain%%7Celement:geometry%%7Cvisibility:on"
-            + "&style=feature:landscape%%7Celement:geometry.fill%%7Ccolor:0x303030"
-            + "&style=feature:poi%%7Celement:geometry.fill%%7Ccolor:0x404040"
-            + "&style=feature:poi.park%%7Celement:geometry.fill%%7Ccolor:0x0a330a"
-            + "&style=feature:water%%7Celement:geometry%%7Ccolor:0x00003a"
-            + "&style=feature:transit%%7Celement:geometry%%7Cvisibility:on%%7Ccolor:0x101010"
-            + "&style=feature:road%%7Celement:geometry.stroke%%7Cvisibility:on"
-            + "&style=feature:road.local%%7Celement:geometry.fill%%7Ccolor:0x606060"
-            + "&style=feature:road.arterial%%7Celement:geometry.fill%%7Ccolor:0x888888";
+            + "&scale=1";
+//            + "&style=element:geometry%%7Cinvert_lightness:true"
+//            + "&style=feature:landscape.natural.terrain%%7Celement:geometry%%7Cvisibility:on"
+//            + "&style=feature:landscape%%7Celement:geometry.fill%%7Ccolor:0x303030"
+//            + "&style=feature:poi%%7Celement:geometry.fill%%7Ccolor:0x404040"
+//            + "&style=feature:poi.park%%7Celement:geometry.fill%%7Ccolor:0x0a330a"
+//            + "&style=feature:water%%7Celement:geometry%%7Ccolor:0x00003a"
+//            + "&style=feature:transit%%7Celement:geometry%%7Cvisibility:on%%7Ccolor:0x101010"
+//            + "&style=feature:road%%7Celement:geometry.stroke%%7Cvisibility:on"
+//            + "&style=feature:road.local%%7Celement:geometry.fill%%7Ccolor:0x606060"
+//            + "&style=feature:road.arterial%%7Celement:geometry.fill%%7Ccolor:0x888888";
 
     /** Formats a Google static maps URL for the specified location and zoom level. */
     private static String makeStaticMapsUrl(double latitude, double longitude, int zoom) {
-        return String.format(STATIC_MAP_URL_TEMPLATE, latitude, longitude, zoom);
+//        return String.format(STATIC_MAP_URL_TEMPLATE, latitude, longitude, zoom);
+        return "http://maps.googleapis.com/maps/api/staticmap"
+                + "?size=320x180"
+                + "&scale=2"
+                + "&maptype=roadmap"
+                + "&format=png"
+                // Maybe use a URL encoder for this part?
+                + "&markers=38.987595,-76.941287%7C38.987658,-76.940542%7C38.984457,-76.940107"
+                + "&path=color:0x0000ff%7Cweight:5%7C38.987595,-76.941287%7C38.987658,-76.940542%7C38.984457,-76.940107";
     }
 
     private ImageView mMapView;
@@ -50,7 +58,7 @@ public class MainActivity extends Activity {
         mMapView = new ImageView(this);
         setContentView(mMapView);
 
-        loadMap(37.8019, -122.4189, 18);
+        loadMap(38.987595, -76.941287, 14);
     }
 
     /** Load the map asynchronously and populate the ImageView when it's loaded. */
