@@ -33,10 +33,6 @@ public class NavigationActivity extends Activity {
     private void createCards() {
         mCards = new ArrayList<CardBuilder>();
 
-//        mCards.add(new CardBuilder(this, CardBuilder.Layout.TEXT)
-//                .setText("This card has a footer.")
-//                .setFootnote("I'm the footer!"));
-
         mCards.add(new CardBuilder(this, CardBuilder.Layout.COLUMNS)
                 .setText("Turn Right on Adam Street")
                 .addImage(R.drawable.turn_right));
@@ -44,13 +40,10 @@ public class NavigationActivity extends Activity {
         mCards.add(new CardBuilder(this, CardBuilder.Layout.COLUMNS)
                 .setText("Turn Left on Bland Street")
                 .addImage(R.drawable.turn_left));
-//
-//        mCards.add(new CardBuilder(this, CardBuilder.Layout.COLUMNS)
-//                .setText("This card has a mosaic of puppies.")
-//                .setFootnote("Aren't they precious?")
-//                .addImage(R.drawable.puppy_small_1);
-//        .addImage(R.drawable.puppy_small_2);
-//        .addImage(R.drawable.puppy_small_3));
+
+        mCards.add(new CardBuilder(this, CardBuilder.Layout.COLUMNS)
+                .setText("Turn Left on Charlie Street")
+                .addImage(R.drawable.turn_left));
     }
 
     private class ExampleCardScrollAdapter extends CardScrollAdapter {

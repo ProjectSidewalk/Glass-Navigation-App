@@ -168,17 +168,17 @@ public class MainActivity extends Activity {
     private List<Pair<Double, Double>> getDummyPath() {
         ArrayList<Pair<Double, Double>> path = new ArrayList<>();
 
-        path.add(new Pair<>(38.987595, -76.941287));
-        path.add(new Pair<>(38.987658, -76.940542));
-        path.add(new Pair<>(38.984457, -76.940107));
-        path.add(new Pair<>(38.982812, -76.939213));
-        path.add(new Pair<>(38.982315, -76.939126));
-        path.add(new Pair<>(38.982284, -76.938809));
-        path.add(new Pair<>(38.981767, -76.938834));
-        path.add(new Pair<>(38.981772, -76.938961));
-        path.add(new Pair<>(38.980967, -76.938921));
-        path.add(new Pair<>(38.980949, -76.938759));
-        path.add(new Pair<>(38.980490, -76.938759));
+        path.add(new Pair<Double, Double>(38.987595, -76.941287));
+        path.add(new Pair<Double, Double>(38.987658, -76.940542));
+        path.add(new Pair<Double, Double>(38.984457, -76.940107));
+        path.add(new Pair<Double, Double>(38.982812, -76.939213));
+        path.add(new Pair<Double, Double>(38.982315, -76.939126));
+        path.add(new Pair<Double, Double>(38.982284, -76.938809));
+        path.add(new Pair<Double, Double>(38.981767, -76.938834));
+        path.add(new Pair<Double, Double>(38.981772, -76.938961));
+        path.add(new Pair<Double, Double>(38.980967, -76.938921));
+        path.add(new Pair<Double, Double>(38.980949, -76.938759));
+        path.add(new Pair<Double, Double>(38.980490, -76.938759));
 
         return path;
     }
