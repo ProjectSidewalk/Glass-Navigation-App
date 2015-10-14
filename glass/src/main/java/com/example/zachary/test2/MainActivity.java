@@ -2,6 +2,7 @@ package com.example.zachary.test2;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -110,13 +111,17 @@ public class MainActivity extends Activity {
             @Override
             public boolean onGesture(Gesture gesture) {
                 if (gesture == Gesture.TAP) {
-                    System.out.println("Tapping!!");
-                    if (overviewMode) {
-                        loadImage("http://www.drodd.com/images12/arrow-clip-art36.png");
-                    } else if (!overviewMode) {
-                        loadImage(makeStaticMapsUrl(getDummyPath()));
-                    }
-                    overviewMode = !overviewMode;
+
+                    Intent myIntent = new Intent(MainActivity.this, NavigationActivity.class);
+                    MainActivity.this.startActivity(myIntent);
+
+//                    System.out.println("Tapping!!");
+//                    if (overviewMode) {
+//                        loadImage("http://www.drodd.com/images12/arrow-clip-art36.png");
+//                    } else if (!overviewMode) {
+//                        loadImage(makeStaticMapsUrl(getDummyPath()));
+//                    }
+//                    overviewMode = !overviewMode;
 
                     return true;
 //                } else if (gesture == Gesture.TWO_TAP) {
