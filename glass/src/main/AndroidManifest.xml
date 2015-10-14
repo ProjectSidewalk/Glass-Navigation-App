@@ -11,8 +11,9 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:icon="@drawable/ic_glass_logo"
-            android:label="@string/title_activity_main" >
+            android:theme="@android:style/Theme.NoTitleBar">
+            <!--android:icon="@drawable/ic_glass_logo"-->
+            <!--android:label="@string/title_activity_main" >-->
             <intent-filter>
                 <action android:name="com.google.android.glass.action.VOICE_TRIGGER" />
             </intent-filter>
