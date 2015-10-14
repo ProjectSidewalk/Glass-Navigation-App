@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.ImageView;
 
 import org.apache.http.HttpResponse;
@@ -17,24 +18,6 @@ import java.io.InputStream;
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
-    private static final String STATIC_MAP_URL_TEMPLATE =
-            "https://maps.googleapis.com/maps/api/staticmap"
-            + "?center=%.5f,%.5f"
-            + "&zoom=%d"
-            + "&sensor=true"
-            + "&size=640x360"
-            + "&scale=1";
-//            + "&style=element:geometry%%7Cinvert_lightness:true"
-//            + "&style=feature:landscape.natural.terrain%%7Celement:geometry%%7Cvisibility:on"
-//            + "&style=feature:landscape%%7Celement:geometry.fill%%7Ccolor:0x303030"
-//            + "&style=feature:poi%%7Celement:geometry.fill%%7Ccolor:0x404040"
-//            + "&style=feature:poi.park%%7Celement:geometry.fill%%7Ccolor:0x0a330a"
-//            + "&style=feature:water%%7Celement:geometry%%7Ccolor:0x00003a"
-//            + "&style=feature:transit%%7Celement:geometry%%7Cvisibility:on%%7Ccolor:0x101010"
-//            + "&style=feature:road%%7Celement:geometry.stroke%%7Cvisibility:on"
-//            + "&style=feature:road.local%%7Celement:geometry.fill%%7Ccolor:0x606060"
-//            + "&style=feature:road.arterial%%7Celement:geometry.fill%%7Ccolor:0x888888";
 
     /** Formats a Google static maps URL for the specified location and zoom level. */
     private static String makeStaticMapsUrl(double latitude, double longitude, int zoom) {
@@ -49,21 +32,21 @@ public class MainActivity extends Activity {
                 + "&path=color:0x0000ff%7Cweight:5%7C38.987595,-76.941287%7C38.987658,-76.940542%7C38.984457,-76.940107";
     }
 
-    private ImageView mMapView;
+    private ImageView view;
+    private boolean overviewMode = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mMapView = new ImageView(this);
-        setContentView(mMapView);
+        view = new ImageView(this);
+        setContentView(view);
 
-        loadMap(38.987595, -76.941287, 14);
+        loadImage(makeStaticMapsUrl(0, 0, 0));
     }
 
     /** Load the map asynchronously and populate the ImageView when it's loaded. */
-    private void loadMap(double latitude, double longitude, int zoom) {
-        String url = makeStaticMapsUrl(latitude, longitude, zoom);
+    private void loadImage(String url) {
         new AsyncTask<String, Void, Bitmap>() {
             @Override
             protected Bitmap doInBackground(String... urls) {
@@ -80,9 +63,28 @@ public class MainActivity extends Activity {
             @Override
             protected void onPostExecute(Bitmap bitmap) {
                 if (bitmap != null) {
-                    mMapView.setImageBitmap(bitmap);
+                    view.setImageBitmap(bitmap);
                 }
             }
         }.execute(url);
+    }
+
+    @Override
+    public boolean onKeyDown(int keycode, KeyEvent event) {
+        if (keycode == KeyEvent.KEYCODE_DPAD_CENTER) {
+            // user tapped touchpad, do something
+            System.out.println("Pressed!!!");
+
+            if (overviewMode) {
+                loadImage("http://www.drodd.com/images12/arrow-clip-art36.png");
+                overviewMode = false;
+            } else {
+                loadImage(makeStaticMapsUrl(0, 0, 0));
+            }
+
+            return true;
+        }
+
+        return super.onKeyDown(keycode, event);
     }
 }
