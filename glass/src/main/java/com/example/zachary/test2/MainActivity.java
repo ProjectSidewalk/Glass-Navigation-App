@@ -1,15 +1,17 @@
 package com.example.zachary.test2;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
-import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 
+import com.google.android.glass.touchpad.Gesture;
 import com.google.android.glass.touchpad.GestureDetector;
 
 import org.apache.http.HttpResponse;
@@ -25,16 +27,21 @@ public class MainActivity extends Activity {
 
     private ImageView view;
     private GestureDetector mGestureDetector;
-    private boolean overviewMode = true;
+    private boolean overviewMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Set-up the default view to be an overview
         view = new ImageView(this);
         setContentView(view);
 
         loadImage(makeStaticMapsUrl(getDummyPath()));
+        overviewMode = true;
+
+        // Set-up the Gesture Detector
+        mGestureDetector = createGestureDetector(this);
     }
 
     /** Load the map asynchronously and populate the ImageView when it's loaded. */
@@ -59,25 +66,6 @@ public class MainActivity extends Activity {
                 }
             }
         }.execute(url);
-    }
-
-    @Override
-    public boolean onKeyDown(int keycode, KeyEvent event) {
-        if (keycode == KeyEvent.KEYCODE_DPAD_CENTER) {
-            // user tapped touchpad, do something
-            System.out.println("Pressed!!!");
-
-            if (overviewMode) {
-                loadImage("http://www.drodd.com/images12/arrow-clip-art36.png");
-                overviewMode = false;
-            } else {
-                loadImage(makeStaticMapsUrl(getDummyPath()));
-            }
-
-            return true;
-        }
-
-        return super.onKeyDown(keycode, event);
     }
 
     // Formats a Google static maps URL
@@ -112,9 +100,63 @@ public class MainActivity extends Activity {
             }
         }
 
-        System.out.println(builder.toString());
-
         return builder.toString();
+    }
+
+    private GestureDetector createGestureDetector(Context context) {
+        GestureDetector gestureDetector = new GestureDetector(context);
+        //Create a base listener for generic gestures
+        gestureDetector.setBaseListener(new GestureDetector.BaseListener() {
+            @Override
+            public boolean onGesture(Gesture gesture) {
+                if (gesture == Gesture.TAP) {
+                    System.out.println("Tapping!!");
+                    if (overviewMode) {
+                        loadImage("http://www.drodd.com/images12/arrow-clip-art36.png");
+                    } else if (!overviewMode) {
+                        loadImage(makeStaticMapsUrl(getDummyPath()));
+                    }
+                    overviewMode = !overviewMode;
+
+                    return true;
+//                } else if (gesture == Gesture.TWO_TAP) {
+//                    // do something on two finger tap
+//                    return true;
+//                } else if (gesture == Gesture.SWIPE_RIGHT) {
+//                    // do something on right (forward) swipe
+//                    return true;
+//                } else if (gesture == Gesture.SWIPE_LEFT) {
+//                    // do something on left (backwards) swipe
+//                    return true;
+                }
+                return false;
+            }
+        });
+
+//        gestureDetector.setFingerListener(new GestureDetector.FingerListener() {
+//            @Override
+//            public void onFingerCountChanged(int previousCount, int currentCount) {
+//                // do something on finger count changes
+//            }
+//        });
+//
+//        gestureDetector.setScrollListener(new GestureDetector.ScrollListener() {
+//            @Override
+//            public boolean onScroll(float displacement, float delta, float velocity) {
+//                // do something on scrolling
+//            }
+//        });
+
+        return gestureDetector;
+    }
+
+    // Enable out GestureDetector to capture gestures
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if (mGestureDetector != null) {
+            return mGestureDetector.onMotionEvent(event);
+        }
+        return false;
     }
 
     // Provide dummy data to start testing
