@@ -24,6 +24,9 @@
         <activity
             android:name=".NavigationActivity">
         </activity>
+        <activity
+            android:name=".IntersectionActivity">
+        </activity>
     </application>
 
 </manifest>

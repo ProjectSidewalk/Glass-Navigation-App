@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
@@ -21,14 +20,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ImageView view;
     private GestureDetector mGestureDetector;
-    private boolean overviewMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +36,6 @@ public class MainActivity extends Activity {
         setContentView(view);
 
         loadImage(makeStaticMapsUrl(getDummyPath()));
-        overviewMode = true;
 
         // Set-up the Gesture Detector
         mGestureDetector = createGestureDetector(this);
@@ -70,7 +66,7 @@ public class MainActivity extends Activity {
     }
 
     // Formats a Google static maps URL
-    private static String makeStaticMapsUrl(List<Pair<Double, Double>> points) {
+    private static String makeStaticMapsUrl(ArrayList<ArrayList<Double>> points) {
         StringBuilder builder = new StringBuilder();
 
         builder.append("http://maps.googleapis.com/maps/api/staticmap");
@@ -93,8 +89,8 @@ public class MainActivity extends Activity {
         // Add the path to the map
         builder.append("&path=color:0x0000ff%7Cweight:5%7C");
         for (int i = 0; i < points.size(); i++) {
-            Pair<Double, Double> point = points.get(i);
-            builder.append(point.first + "," + point.second);
+            ArrayList<Double> point = points.get(i);
+            builder.append(point.get(0) + "," + point.get(1));
             if (i != (points.size() - 1)) {
                 // Add the '|' character
                 builder.append("%7C");
@@ -114,14 +110,6 @@ public class MainActivity extends Activity {
 
                     Intent myIntent = new Intent(MainActivity.this, NavigationActivity.class);
                     MainActivity.this.startActivity(myIntent);
-
-//                    System.out.println("Tapping!!");
-//                    if (overviewMode) {
-//                        loadImage("http://www.drodd.com/images12/arrow-clip-art36.png");
-//                    } else if (!overviewMode) {
-//                        loadImage(makeStaticMapsUrl(getDummyPath()));
-//                    }
-//                    overviewMode = !overviewMode;
 
                     return true;
 //                } else if (gesture == Gesture.TWO_TAP) {
@@ -165,20 +153,20 @@ public class MainActivity extends Activity {
     }
 
     // Provide dummy data to start testing
-    private List<Pair<Double, Double>> getDummyPath() {
-        ArrayList<Pair<Double, Double>> path = new ArrayList<>();
+    private ArrayList<ArrayList<Double>> getDummyPath() {
+        ArrayList<ArrayList<Double>> path = new ArrayList<>();
 
-        path.add(new Pair<Double, Double>(38.987595, -76.941287));
-        path.add(new Pair<Double, Double>(38.987658, -76.940542));
-        path.add(new Pair<Double, Double>(38.984457, -76.940107));
-        path.add(new Pair<Double, Double>(38.982812, -76.939213));
-        path.add(new Pair<Double, Double>(38.982315, -76.939126));
-        path.add(new Pair<Double, Double>(38.982284, -76.938809));
-        path.add(new Pair<Double, Double>(38.981767, -76.938834));
-        path.add(new Pair<Double, Double>(38.981772, -76.938961));
-        path.add(new Pair<Double, Double>(38.980967, -76.938921));
-        path.add(new Pair<Double, Double>(38.980949, -76.938759));
-        path.add(new Pair<Double, Double>(38.980490, -76.938759));
+        path.add(new ArrayList<Double>() {{ add(38.987595); add(-76.941287); }});
+        path.add(new ArrayList<Double>() {{ add(38.987658); add(-76.940542); }});
+        path.add(new ArrayList<Double>() {{ add(38.984457); add(-76.940107); }});
+        path.add(new ArrayList<Double>() {{ add(38.982812); add(-76.939213); }});
+        path.add(new ArrayList<Double>() {{ add(38.982315); add(-76.939126); }});
+        path.add(new ArrayList<Double>() {{ add(38.982284); add(-76.938809); }});
+        path.add(new ArrayList<Double>() {{ add(38.981767); add(-76.938834); }});
+        path.add(new ArrayList<Double>() {{ add(38.981772); add(-76.938961); }});
+        path.add(new ArrayList<Double>() {{ add(38.980967); add(-76.938921); }});
+        path.add(new ArrayList<Double>() {{ add(38.980949); add(-76.938759); }});
+        path.add(new ArrayList<Double>() {{ add(38.980490); add(-76.938759); }});
 
         return path;
     }
