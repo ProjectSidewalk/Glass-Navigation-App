@@ -71,8 +71,8 @@ public class IntersectionActivity extends Activity {
         // Add the markers to the map
 //        builder.append("&markers=");
 //        for (int i = 0; i < points.size(); i++) {
-//            Pair<Double, Double> point = points.get(i);
-//            builder.append(point.first + "," + point.second);
+//            ArrayList<Double> point = points.get(i);
+//            builder.append(point.get(0) + "," + point.get(1));
 //            if (i != (points.size() - 1)) {
 //                // Add the '|' character
 //                builder.append("%7C");
