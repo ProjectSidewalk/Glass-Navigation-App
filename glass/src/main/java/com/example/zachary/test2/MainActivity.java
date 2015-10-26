@@ -45,8 +45,6 @@ public class MainActivity extends Activity {
 
         // Set-up the Gesture Detector
         mGestureDetector = createGestureDetector(this);
-
-        System.out.println("Loc: " + getLastLocation(this).toString());
     }
 
     /** Load the map asynchronously and populate the ImageView when it's loaded. */
@@ -118,6 +116,14 @@ public class MainActivity extends Activity {
 
         // Remove text layers
         builder.append("&style=feature:all%7Celement:labels%7Cvisibility:off");
+
+//        view.setRotation(lastLocation.getBearing());
+
+        if(lastLocation != null) {
+            System.out.println("Bearing: " + lastLocation.getBearing());
+        } else {
+            System.out.println("No bearing!");
+        }
 
         System.out.println(builder.toString());
 
@@ -206,8 +212,10 @@ public class MainActivity extends Activity {
 
         for (String provider : providers) {
             Location location = manager.getLastKnownLocation(provider);
-            if (location != null && location.getAccuracy() != 0.0) {
-                locations.add(location);
+//            if (location != null && location.getAccuracy() != 0.0) {
+            if (location != null && location.getAccuracy() != 0.0 && location.hasBearing()) {
+                    locations.add(location);
+                }
             }
         }
 
