@@ -117,7 +117,7 @@ public class MainActivity extends Activity {
         }
 
         // Remove text layers
-//        builder.append("&style=feature:all%7Celement:labels%7Cvisibility:off");
+        builder.append("&style=feature:all%7Celement:labels%7Cvisibility:off");
 
         System.out.println(builder.toString());
 
