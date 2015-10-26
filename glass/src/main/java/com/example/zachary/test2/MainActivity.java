@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +23,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -39,6 +45,8 @@ public class MainActivity extends Activity {
 
         // Set-up the Gesture Detector
         mGestureDetector = createGestureDetector(this);
+
+        System.out.println("Loc: " + getLastLocation(this).toString());
     }
 
     /** Load the map asynchronously and populate the ImageView when it's loaded. */
@@ -66,7 +74,8 @@ public class MainActivity extends Activity {
     }
 
     // Formats a Google static maps URL
-    private static String makeStaticMapsUrl(ArrayList<ArrayList<Double>> points) {
+    // Note: "%7C" is used in place of "|"
+    private String makeStaticMapsUrl(ArrayList<ArrayList<Double>> points) {
         StringBuilder builder = new StringBuilder();
 
         builder.append("http://maps.googleapis.com/maps/api/staticmap");
@@ -86,6 +95,16 @@ public class MainActivity extends Activity {
 //            }
 //        }
 
+        // Add current location to the map
+        Location lastLocation = getLastLocation(this);
+        if (lastLocation != null) {
+            builder.append("&markers=");
+            builder.append("size:tiny%7C");
+            builder.append(lastLocation.getLatitude());
+            builder.append(",");
+            builder.append(lastLocation.getLongitude());
+        }
+
         // Add the path to the map
         builder.append("&path=color:0x0000ff%7Cweight:5%7C");
         for (int i = 0; i < points.size(); i++) {
@@ -96,6 +115,11 @@ public class MainActivity extends Activity {
                 builder.append("%7C");
             }
         }
+
+        // Remove text layers
+//        builder.append("&style=feature:all%7Celement:labels%7Cvisibility:off");
+
+        System.out.println(builder.toString());
 
         return builder.toString();
     }
@@ -169,5 +193,35 @@ public class MainActivity extends Activity {
         path.add(new ArrayList<Double>() {{ add(38.980490); add(-76.938759); }});
 
         return path;
+    }
+
+    public static Location getLastLocation(Context context) {
+        LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.NO_REQUIREMENT);
+
+        List<String> providers = manager.getProviders(criteria, true);
+        List<Location> locations = new ArrayList<Location>();
+
+        for (String provider : providers) {
+            Location location = manager.getLastKnownLocation(provider);
+            if (location != null && location.getAccuracy() != 0.0) {
+                locations.add(location);
+            }
+        }
+
+        Collections.sort(locations, new Comparator<Location>() {
+            @Override
+            public int compare(Location location, Location location2) {
+                return (int) (location.getAccuracy() - location2.getAccuracy());
+            }
+        });
+
+        if (locations.size() > 0) {
+            return locations.get(0);
+        }
+
+        return null;
     }
 }
