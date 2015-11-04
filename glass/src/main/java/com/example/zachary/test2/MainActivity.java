@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -118,6 +119,12 @@ public class MainActivity extends Activity {
         builder.append("&style=feature:all%7Celement:labels%7Cvisibility:off");
 
 //        view.setRotation(lastLocation.getBearing());
+        view.setRotation(-135);
+
+//        SensorManager sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+//        float t1[] = new float[5];
+//        float t2[] = new float[3];
+//        System.out.println(sensorManager.getOrientation(t1, t2));
 
         if(lastLocation != null) {
             System.out.println("Bearing: " + lastLocation.getBearing());
@@ -212,10 +219,10 @@ public class MainActivity extends Activity {
 
         for (String provider : providers) {
             Location location = manager.getLastKnownLocation(provider);
-//            if (location != null && location.getAccuracy() != 0.0) {
-            if (location != null && location.getAccuracy() != 0.0 && location.hasBearing()) {
+            if (location != null && location.getAccuracy() != 0.0) {
+//            if (location != null && location.getAccuracy() != 0.0 && location.hasBearing()) {
                     locations.add(location);
-                }
+//                }
             }
         }
 
