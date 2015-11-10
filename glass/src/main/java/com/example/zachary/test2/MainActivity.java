@@ -33,14 +33,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class MainActivity extends Activity implements SensorEventListener {
+public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ImageView view;
     private GestureDetector mGestureDetector;
 
     // Store current sensor data
-    SensorManager sensorManager;
     float[] mGravs;
     float[] mGeoMags;
     Rolling rollingX, rollingY, rollingZ;
@@ -50,9 +49,28 @@ public class MainActivity extends Activity implements SensorEventListener {
         super.onCreate(savedInstanceState);
 
         // Register sensor detecting
-        sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_UI);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
+        SensorManager sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        LocationManager locationManger = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        OrientationManager orientationManager = new OrientationManager(sensorManager, locationManger);
+        orientationManager.addOnChangedListener(new OrientationManager.OnChangedListener() {
+            @Override
+            public void onOrientationChanged(OrientationManager orientationManager) {
+                System.out.println("OM Heading: " + orientationManager.getHeading());
+                rotateImage(orientationManager.getHeading());
+            }
+
+            @Override
+            public void onLocationChanged(OrientationManager orientationManager) {
+                return;
+            }
+
+            @Override
+            public void onAccuracyChanged(OrientationManager orientationManager) {
+                return;
+            }
+        });
+        orientationManager.start();
+
 
         // Set-up the default view to be an overview
         view = new ImageView(this);
@@ -146,28 +164,35 @@ public class MainActivity extends Activity implements SensorEventListener {
     // http://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation(float[], float[])
     // http://developer.android.com/reference/android/hardware/SensorManager.html#getRotationMatrix(float[], float[], float[], float[])
     // https://developers.google.com/glass/develop/gdk/location-sensors
-    private void rotateImage() {
-        float R[] = new float[9];
+//    private void rotateImage() {
+//        float R[] = new float[9];
 //        float I[] = new float[9];
-        float orientationValues[] = new float[3];
-
-        if (mGravs != null && mGeoMags != null) {
-            if (sensorManager.getRotationMatrix(R, null, mGravs, mGeoMags)) {
-                sensorManager.getOrientation(R, orientationValues);
+//        float orientationValues[] = new float[3];
+//
+//        if (mGravs != null && mGeoMags != null) {
+//            if (sensorManager.getRotationMatrix(R, null, mGravs, mGeoMags)) {
+//                sensorManager.getOrientation(R, orientationValues);
 //                view.setRotation(new Float(Math.toDegrees(new Double(orientationValues[0]))));
 //                System.out.println(Arrays.toString(orientationValues));
 //                System.out.println(new Float(Math.toDegrees(new Double(orientationValues[0]))) + "  |  " +  new Float(Math.toDegrees(new Double(orientationValues[1]))) + "  |  " +  new Float(Math.toDegrees(new Double(orientationValues[2]))));
-
-                rollingX.add(-1 * orientationValues[1]);
-                rollingY.add(orientationValues[2]);
-                rollingZ.add(-1 * orientationValues[0]);
-
-                System.out.println("Y: " + rollingY.getAverage() / 3.14159);
+//
+//                rollingX.add(-1 * orientationValues[1]);
+//                rollingY.add(orientationValues[2]);
+//                rollingZ.add(-1 * orientationValues[0]);
+//
+//                System.out.println("Y: " + rollingY.getAverage() / 3.14159);
 //                System.out.println("X: " + rollingX.getAverage() + "  |  Y: " + rollingY.getAverage() + "  |  Z: " + rollingZ.getAverage());
 //                System.out.println("mGravs: " + Arrays.toString(mGravs));
 //                System.out.println("mGeoMags: " + Arrays.toString(mGeoMags));
-            }
-        }
+//            }
+//            if (sensorManager.getRotationMatrix(null, I, mGravs, mGeoMags)) {
+//                System.out.println("I: " + sensorManager.getInclination(I));
+//            }
+//        }
+//    }
+
+    private void rotateImage(float angle) {
+        view.setRotation(angle);
     }
 
     private GestureDetector createGestureDetector(Context context) {
@@ -271,31 +296,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
 
         return null;
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        switch (sensorEvent.sensor.getType()) {
-            case Sensor.TYPE_ACCELEROMETER:
-//                System.arraycopy(sensorEvent.values, 0, mGravs, 0, 3);
-                mGravs = sensorEvent.values.clone();
-                rotateImage();
-
-                break;
-            case Sensor.TYPE_MAGNETIC_FIELD:
-                //                System.arraycopy(sensorEvent.values, 0, mGeoMags, 0, 3);
-                mGeoMags = sensorEvent.values.clone();
-                rotateImage();
-
-                break;
-            default:
-                return;
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
 
     public class Rolling {
