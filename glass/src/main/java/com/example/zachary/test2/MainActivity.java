@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -24,19 +27,32 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements SensorEventListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ImageView view;
     private GestureDetector mGestureDetector;
 
+    // Store current sensor data
+    SensorManager sensorManager;
+    float[] mGravs;
+    float[] mGeoMags;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Register sensor detecting
+        sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
+
+        System.out.println("SM: " + sensorManager);
 
         // Set-up the default view to be an overview
         view = new ImageView(this);
@@ -118,23 +134,24 @@ public class MainActivity extends Activity {
         // Remove text layers
         builder.append("&style=feature:all%7Celement:labels%7Cvisibility:off");
 
-//        view.setRotation(lastLocation.getBearing());
-        view.setRotation(-135);
-
-//        SensorManager sensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
-//        float t1[] = new float[5];
-//        float t2[] = new float[3];
-//        System.out.println(sensorManager.getOrientation(t1, t2));
-
-        if(lastLocation != null) {
-            System.out.println("Bearing: " + lastLocation.getBearing());
-        } else {
-            System.out.println("No bearing!");
-        }
-
         System.out.println(builder.toString());
 
         return builder.toString();
+    }
+
+    private void rotateImage() {
+        float R[] = new float[16];
+//        float I[] = new float[9];
+        float orientationValues[] = new float[3];
+
+        if (mGravs != null && mGeoMags != null) {
+            if (sensorManager.getRotationMatrix(R, null, mGravs, mGeoMags)) {
+                sensorManager.getOrientation(R, orientationValues);
+//                view.setRotation(new Float(Math.toDegrees(new Double(orientationValues[0]))));
+                System.out.println(Arrays.toString(orientationValues));
+//                System.out.println(new Float(Math.toDegrees(new Double(orientationValues[0]))) + "  |  " +  new Float(Math.toDegrees(new Double(orientationValues[1]))) + "  |  " +  new Float(Math.toDegrees(new Double(orientationValues[2]))));
+            }
+        }
     }
 
     private GestureDetector createGestureDetector(Context context) {
@@ -238,5 +255,28 @@ public class MainActivity extends Activity {
         }
 
         return null;
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        switch (sensorEvent.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                mGravs = sensorEvent.values.clone();
+                rotateImage();
+
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                mGeoMags = sensorEvent.values.clone();
+                rotateImage();
+
+                break;
+            default:
+                return;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }
