@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -42,6 +43,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     SensorManager sensorManager;
     float[] mGravs;
     float[] mGeoMags;
+    Rolling rollingX, rollingY, rollingZ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +54,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_UI);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
 
-        System.out.println("SM: " + sensorManager);
-
         // Set-up the default view to be an overview
         view = new ImageView(this);
         setContentView(view);
@@ -62,6 +62,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         // Set-up the Gesture Detector
         mGestureDetector = createGestureDetector(this);
+
+        rollingX = new Rolling(30);
+        rollingY = new Rolling(30);
+        rollingZ = new Rolling(30);
     }
 
     /** Load the map asynchronously and populate the ImageView when it's loaded. */
@@ -139,8 +143,11 @@ public class MainActivity extends Activity implements SensorEventListener {
         return builder.toString();
     }
 
+    // http://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation(float[], float[])
+    // http://developer.android.com/reference/android/hardware/SensorManager.html#getRotationMatrix(float[], float[], float[], float[])
+    // https://developers.google.com/glass/develop/gdk/location-sensors
     private void rotateImage() {
-        float R[] = new float[16];
+        float R[] = new float[9];
 //        float I[] = new float[9];
         float orientationValues[] = new float[3];
 
@@ -148,8 +155,17 @@ public class MainActivity extends Activity implements SensorEventListener {
             if (sensorManager.getRotationMatrix(R, null, mGravs, mGeoMags)) {
                 sensorManager.getOrientation(R, orientationValues);
 //                view.setRotation(new Float(Math.toDegrees(new Double(orientationValues[0]))));
-                System.out.println(Arrays.toString(orientationValues));
+//                System.out.println(Arrays.toString(orientationValues));
 //                System.out.println(new Float(Math.toDegrees(new Double(orientationValues[0]))) + "  |  " +  new Float(Math.toDegrees(new Double(orientationValues[1]))) + "  |  " +  new Float(Math.toDegrees(new Double(orientationValues[2]))));
+
+                rollingX.add(-1 * orientationValues[1]);
+                rollingY.add(orientationValues[2]);
+                rollingZ.add(-1 * orientationValues[0]);
+
+                System.out.println("Y: " + rollingY.getAverage() / 3.14159);
+//                System.out.println("X: " + rollingX.getAverage() + "  |  Y: " + rollingY.getAverage() + "  |  Z: " + rollingZ.getAverage());
+//                System.out.println("mGravs: " + Arrays.toString(mGravs));
+//                System.out.println("mGeoMags: " + Arrays.toString(mGeoMags));
             }
         }
     }
@@ -261,11 +277,13 @@ public class MainActivity extends Activity implements SensorEventListener {
     public void onSensorChanged(SensorEvent sensorEvent) {
         switch (sensorEvent.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
+//                System.arraycopy(sensorEvent.values, 0, mGravs, 0, 3);
                 mGravs = sensorEvent.values.clone();
                 rotateImage();
 
                 break;
             case Sensor.TYPE_MAGNETIC_FIELD:
+                //                System.arraycopy(sensorEvent.values, 0, mGeoMags, 0, 3);
                 mGeoMags = sensorEvent.values.clone();
                 rotateImage();
 
@@ -278,5 +296,30 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    public class Rolling {
+
+        private int size;
+        private double total = 0d;
+        private int index = 0;
+        private double samples[];
+
+        public Rolling(int size) {
+            this.size = size;
+            samples = new double[size];
+            for (int i = 0; i < size; i++) samples[i] = 0d;
+        }
+
+        public void add(double x) {
+            total -= samples[index];
+            samples[index] = x;
+            total += x;
+            if (++index == size) index = 0; // cheaper than modulus
+        }
+
+        public double getAverage() {
+            return total / size;
+        }
     }
 }
