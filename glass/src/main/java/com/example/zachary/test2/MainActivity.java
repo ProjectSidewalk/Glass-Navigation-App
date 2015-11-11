@@ -40,8 +40,6 @@ public class MainActivity extends Activity {
     private GestureDetector mGestureDetector;
 
     // Store current sensor data
-    float[] mGravs;
-    float[] mGeoMags;
     Rolling rollingX, rollingY, rollingZ;
 
     @Override
