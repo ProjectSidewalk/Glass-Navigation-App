@@ -5,10 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.GeomagneticField;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -28,7 +24,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -53,7 +48,6 @@ public class MainActivity extends Activity {
         orientationManager.addOnChangedListener(new OrientationManager.OnChangedListener() {
             @Override
             public void onOrientationChanged(OrientationManager orientationManager) {
-                System.out.println("OM Heading: " + orientationManager.getHeading());
                 rotateImage(orientationManager.getHeading());
             }
 
@@ -130,7 +124,7 @@ public class MainActivity extends Activity {
 //            }
 //        }
 
-        // Add current location to the map
+        // Add current location to the map and make it the center
         Location lastLocation = getLastLocation(this);
         if (lastLocation != null) {
             builder.append("&markers=");
@@ -138,7 +132,14 @@ public class MainActivity extends Activity {
             builder.append(lastLocation.getLatitude());
             builder.append(",");
             builder.append(lastLocation.getLongitude());
+            builder.append("&center=");
+            builder.append(lastLocation.getLatitude());
+            builder.append(",");
+            builder.append(lastLocation.getLongitude());
         }
+
+        // Set zoom level
+        builder.append("&zoom=14");
 
         // Add the path to the map
         builder.append("&path=color:0x0000ff%7Cweight:5%7C");
@@ -190,7 +191,9 @@ public class MainActivity extends Activity {
 //    }
 
     private void rotateImage(float angle) {
-        view.setRotation(angle);
+        view.setRotation(-1 * angle);
+        view.setScaleY(2);
+        view.setScaleX(2);
     }
 
     private GestureDetector createGestureDetector(Context context) {
@@ -276,9 +279,7 @@ public class MainActivity extends Activity {
         for (String provider : providers) {
             Location location = manager.getLastKnownLocation(provider);
             if (location != null && location.getAccuracy() != 0.0) {
-//            if (location != null && location.getAccuracy() != 0.0 && location.hasBearing()) {
                     locations.add(location);
-//                }
             }
         }
 
