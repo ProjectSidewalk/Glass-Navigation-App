@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
     private GestureDetector mGestureDetector;
 
     // Store current sensor data
-    Rolling rollingX, rollingY, rollingZ;
+//    Rolling rollingHeading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +73,7 @@ public class MainActivity extends Activity {
         // Set-up the Gesture Detector
         mGestureDetector = createGestureDetector(this);
 
-        rollingX = new Rolling(30);
-        rollingY = new Rolling(30);
-        rollingZ = new Rolling(30);
+//        rollingHeading = new Rolling(5);
     }
 
     /** Load the map asynchronously and populate the ImageView when it's loaded. */
@@ -297,28 +295,28 @@ public class MainActivity extends Activity {
         return null;
     }
 
-    public class Rolling {
-
-        private int size;
-        private double total = 0d;
-        private int index = 0;
-        private double samples[];
-
-        public Rolling(int size) {
-            this.size = size;
-            samples = new double[size];
-            for (int i = 0; i < size; i++) samples[i] = 0d;
-        }
-
-        public void add(double x) {
-            total -= samples[index];
-            samples[index] = x;
-            total += x;
-            if (++index == size) index = 0; // cheaper than modulus
-        }
-
-        public double getAverage() {
-            return total / size;
-        }
-    }
+//    public class Rolling {
+//
+//        private int size;
+//        private float total = 0f;
+//        private int index = 0;
+//        private float samples[];
+//
+//        public Rolling(int size) {
+//            this.size = size;
+//            samples = new float[size];
+//            for (int i = 0; i < size; i++) samples[i] = 0f;
+//        }
+//
+//        public void add(float x) {
+//            total -= samples[index];
+//            samples[index] = x;
+//            total += x;
+//            if (++index == size) index = 0; // cheaper than modulus
+//        }
+//
+//        public float getAverage() {
+//            return total / size;
+//        }
+//    }
 }
