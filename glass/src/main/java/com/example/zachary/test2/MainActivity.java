@@ -34,9 +34,6 @@ public class MainActivity extends Activity {
     private ImageView view;
     private GestureDetector mGestureDetector;
 
-    // Store current sensor data
-//    Rolling rollingHeading;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,36 +155,6 @@ public class MainActivity extends Activity {
         return builder.toString();
     }
 
-    // http://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation(float[], float[])
-    // http://developer.android.com/reference/android/hardware/SensorManager.html#getRotationMatrix(float[], float[], float[], float[])
-    // https://developers.google.com/glass/develop/gdk/location-sensors
-//    private void rotateImage() {
-//        float R[] = new float[9];
-//        float I[] = new float[9];
-//        float orientationValues[] = new float[3];
-//
-//        if (mGravs != null && mGeoMags != null) {
-//            if (sensorManager.getRotationMatrix(R, null, mGravs, mGeoMags)) {
-//                sensorManager.getOrientation(R, orientationValues);
-//                view.setRotation(new Float(Math.toDegrees(new Double(orientationValues[0]))));
-//                System.out.println(Arrays.toString(orientationValues));
-//                System.out.println(new Float(Math.toDegrees(new Double(orientationValues[0]))) + "  |  " +  new Float(Math.toDegrees(new Double(orientationValues[1]))) + "  |  " +  new Float(Math.toDegrees(new Double(orientationValues[2]))));
-//
-//                rollingX.add(-1 * orientationValues[1]);
-//                rollingY.add(orientationValues[2]);
-//                rollingZ.add(-1 * orientationValues[0]);
-//
-//                System.out.println("Y: " + rollingY.getAverage() / 3.14159);
-//                System.out.println("X: " + rollingX.getAverage() + "  |  Y: " + rollingY.getAverage() + "  |  Z: " + rollingZ.getAverage());
-//                System.out.println("mGravs: " + Arrays.toString(mGravs));
-//                System.out.println("mGeoMags: " + Arrays.toString(mGeoMags));
-//            }
-//            if (sensorManager.getRotationMatrix(null, I, mGravs, mGeoMags)) {
-//                System.out.println("I: " + sensorManager.getInclination(I));
-//            }
-//        }
-//    }
-
     private void rotateImage(float angle) {
         view.setRotation(-1 * angle);
         view.setScaleY(2);
@@ -294,29 +261,4 @@ public class MainActivity extends Activity {
 
         return null;
     }
-
-//    public class Rolling {
-//
-//        private int size;
-//        private float total = 0f;
-//        private int index = 0;
-//        private float samples[];
-//
-//        public Rolling(int size) {
-//            this.size = size;
-//            samples = new float[size];
-//            for (int i = 0; i < size; i++) samples[i] = 0f;
-//        }
-//
-//        public void add(float x) {
-//            total -= samples[index];
-//            samples[index] = x;
-//            total += x;
-//            if (++index == size) index = 0; // cheaper than modulus
-//        }
-//
-//        public float getAverage() {
-//            return total / size;
-//        }
-//    }
 }
